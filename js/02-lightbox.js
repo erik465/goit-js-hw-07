@@ -4,29 +4,34 @@ import { galleryItems } from './gallery-items.js';
 
 const galleryEl = document.querySelector('.gallery')
 
-
-
-galleryItems.forEach(galleryItem => {
-    galleryEl.insertAdjacentHTML("afterbegin", `<li class="gallery__item">
-    <a class="gallery__link" href="${galleryItem.original}">
-       <img class="gallery__image" src="${galleryItem.preview}" alt="${galleryItem.description}" />
+const galleryMarkup = galleryItems.map(({preview, original, description}) => {
+    return `<li class="gallery__item">
+    <a class="gallery__link" href="${original}">
+      <img
+        class="gallery__image"
+        src="${preview}"
+        data-source="${original}"
+        alt="${description}"
+      />
     </a>
- </li>`)
-})
+  </li>`
+  })
 
-galleryEl.addEventListener("click", (e) =>{
-    if(e.target.nodeName == "IMG"){
-        e.preventDefault()
-        const lightbox = new SimpleLightbox('.gallery a', {
-            captions : true,
-            captionSelector  : 'self',
-            captionType: 'attr',
-            captionsData : e.target.alt, 
-            captionPosition : 'bottom',
-            captionDelay : 0,
-            captionClass : "caption"
-        });
+galleryEl.insertAdjacentHTML('afterbegin', galleryMarkup.join(""))
+
+galleryEl.addEventListener("click", handleGallery)
+
+
+function handleGallery (e){
+    e.preventDefault()
+    if(e.target.tagName !== 'IMG'){
+        return
     }
+}
+new SimpleLightbox('.gallery a', {
+    captionsData : 'alt', 
+    captionDelay : 250,
+});
 
-    
-})
+
+

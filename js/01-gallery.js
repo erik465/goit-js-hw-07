@@ -4,29 +4,33 @@ import { galleryItems } from './gallery-items.js';
 
 const galleryEl = document.querySelector('.gallery')
 
-galleryItems.forEach(galleryItem => {
-    galleryEl.insertAdjacentHTML("afterbegin", `<li class="gallery__item">
-    <a class="gallery__link" href="${galleryItem.original}">
-      <img
-        class="gallery__image"
-        src="${galleryItem.preview}"
-        data-source="${galleryItem.original}"
-        alt="${galleryItem.description}"
-      />
-    </a>
-  </li>`)
+
+const galleryMarkup = galleryItems.map(({preview, original, description}) => {
+  return `<li class="gallery__item">
+  <a class="gallery__link" href="${original}">
+    <img
+      class="gallery__image"
+      src="${preview}"
+      data-source="${original}"
+      alt="${description}"
+    />
+  </a>
+</li>`
 })
 
-galleryEl.addEventListener("click", (e) =>{
-    e.preventDefault()
-    if(e.target.nodeName !== "IMG"){
-        return
-    }
+galleryEl.insertAdjacentHTML('afterbegin', galleryMarkup.join(""))
+
+const handleGalleryClick = (e) => {
+  e.preventDefault()
 
     const instance = basicLightbox.create(`
-    <img src="${e.target.src}" width="800" height="600">
-`)
+    <img src="${e.target.src}" width="800" height="600">`, {
+      onClose: () => {
+      galleryEl.removeEventListener("click", handleGalleryClick)
+    }
+	})
 
     instance.show()
-    
-})
+}
+
+galleryEl.addEventListener("click", handleGalleryClick)
